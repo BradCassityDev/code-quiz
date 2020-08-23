@@ -39,7 +39,7 @@ header {
 .question-text {
     margin-bottom: 15px;
 }
-#choice-container button {
+#options-container button {
     display: block;
     width: 100%;
     text-align: left;
