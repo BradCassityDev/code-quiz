@@ -19,6 +19,15 @@ var questions = [
             {option: 4, choice: "numbers"}
         ],
         answer: 3
+    },
+    {   question: "A very useful tool used during development and debugging for printing content to the debugger is:", 
+        choices: [
+            {option: 1, choice: "JavaScript"},
+            {option: 2, choice: "console.log"},
+            {option: 3, choice: "for loops"},
+            {option: 4, choice: "terminal/bash"}
+        ],
+        answer: 2
     }
 ];
 // quiz variables and default values
@@ -82,6 +91,196 @@ var loadHomePage = function () {
     mainContentEl.appendChild(sectionContentEl);
 }
 
+// End Quiz
+var endQuiz = function(result) {
 
+    score = answeredCorrectly / questions.length; 
+    if(result === "Lost") {
+        alert("You ran out of time!");
+    } 
+
+    // Section Content
+    var sectionContentEl = mainContentEl.querySelector("#section-content");
+
+    // Create quiz result container
+    var quizResultsContainerEl = document.createElement("div");
+    quizResultsContainerEl.id = "quiz-results-container"
+
+    // heading
+    var resultHeadingEl = document.createElement("h2");
+    resultHeadingEl.textContent = "All done!";
+    quizResultsContainerEl.appendChild(resultHeadingEl);
+
+    // Final score display
+    var resultScoreEl = document.createElement("p");
+    resultScoreEl.textContent = "Your final score is " + timeLeft;
+    quizResultsContainerEl.appendChild(resultScoreEl);
+
+    // Add form input for initials
+    var formEl = document.createElement("form");
+
+    var formInputLabelEl = document.createElement("label");
+    formInputLabelEl.setAttribute("for", "initial-input");
+    formInputLabelEl.textContent = "Enter initials: ";
+    formEl.appendChild(formInputLabelEl);
+
+    var formInputEl = document.createElement("input");
+    formInputEl.type = "text";
+    formInputEl.name = "initial-input"
+    formEl.appendChild(formInputEl);
+
+    var formSubmitBtnEl = document.createElement("button");
+    formSubmitBtnEl.type = "submit";
+    formSubmitBtnEl.textContent = "Submit";
+    formSubmitBtnEl.id = "submit-score-btn";
+    formSubmitBtnEl.className = "primary-button";
+    formEl.appendChild(formSubmitBtnEl);
+
+    quizResultsContainerEl.appendChild(formEl);
+    // Add quiz result content to section
+    sectionContentEl.appendChild(quizResultsContainerEl);
+}
+
+// Quiz Section Creation 
+var loadNextQuestion = function() {
+    // create variable containing section
+    var sectionContentEl = mainContentEl.querySelector("#section-content");
+
+    // Create question wrapper
+    var questionContentEl = document.createElement("div");
+    questionContentEl.id = "question-content-wrapper";
+
+    // Create and add question to wrapper
+    var questionEl = document.createElement("h2");
+    questionEl.className = "question-text";
+    questionEl.textContent = questions[currentQuestionNum].question;
+    questionContentEl.appendChild(questionEl);
+
+    // Loop through question answers and add to question content
+    var choiceContainerEl = document.createElement("div");
+    choiceContainerEl.id = "choice-container";
+    for (var i = 0; i < questions[currentQuestionNum].choices.length; i++) {
+        // comment create choice button 
+        var choiceButtonEl = document.createElement("button");
+        choiceButtonEl.className = "primary-button";
+        choiceButtonEl.id = "choice-" + questions[currentQuestionNum].choices[i].option;
+        choiceButtonEl.setAttribute("data-question-number", currentQuestionNum);
+        choiceButtonEl.setAttribute("data-option-number", questions[currentQuestionNum].choices[i].option);
+        choiceButtonEl.textContent = questions[currentQuestionNum].choices[i].choice;
+        // add new button to choice container
+        choiceContainerEl.appendChild(choiceButtonEl);
+    }
+
+    // Add choices to question Container
+    questionContentEl.appendChild(choiceContainerEl);
+
+    // add new question content to section content
+    sectionContentEl.appendChild(questionContentEl);
+
+    // Increment Current Question
+    currentQuestionNum++;
+
+}
+
+// Begin Quiz Timer
+var startTimer = function() {
+    timeLeft = 60;
+    var timeRemainingEl = mainContentEl.querySelector("#time-remaining-span");
+    timeRemainingEl.textContent = timeLeft;
+    timeLeft--;
+    countDown = setInterval(function() {
+        if (timeLeft < 0) {
+            timeRemainingEl.textContent = "0";
+            clearInterval(countDown);
+            endQuiz("Lost");
+        } else {
+            timeRemainingEl.textContent = timeLeft;
+            timeLeft--;
+        }
+    }, 1000);
+}
+
+// Start Quiz
+var startQuiz = function() {
+    // Reset Variables for new quiz
+    answeredCorrectly = 0;
+    currentQuestionNum = 0;
+    score = 0;
+    // Begin timer for quiz
+    startTimer();
+
+    // Remove Home Content
+    var homeContentEl = mainContentEl.querySelector("#home-content-wrapper");
+    homeContentEl.remove();
+
+    // Start on the first question
+    loadNextQuestion();
+}
+
+// Verify Question Answer and Adjust Score/Time
+var verifyAnswer = function(questionNum, choiceNum) {
+    // Verify Response
+    var choiceResult = '';
+    if (questions[questionNum].answer === parseInt(choiceNum)) {
+        // Answered correctly
+        answeredCorrectly++;
+        choiceResult = "Correct!";
+    } else {
+        // Got question wrong
+        choiceResult = "Wrong!";
+        // Deduct 10 seconds from total time remaining
+        timeLeft = timeLeft - 10;
+    }
+    
+    // Remove previous question 
+    var questionContentEl = mainContentEl.querySelector("#question-content-wrapper");
+    questionContentEl.remove();
+
+    // Verify there are more questions to render
+    if (currentQuestionNum < questions.length) {
+        // Go to next question
+        loadNextQuestion();
+        var parentContainer = mainContentEl.querySelector("#question-content-wrapper");
+    } else {
+        // End quiz timer
+        clearInterval(countDown);
+
+        // Go to results page
+        endQuiz("Finished");
+        var parentContainer = mainContentEl.querySelector("#quiz-results-container");
+    }
+
+    // Include previous question result at end if it exists
+    var previousResultContainerEl = document.createElement("div");
+    previousResultContainerEl.id = "previous-result-container";
+    
+    var previousResultTextEl = document.createElement("h3");
+    previousResultTextEl.className = "previous-result";
+    previousResultTextEl.textContent = choiceResult;
+    previousResultContainerEl.appendChild(previousResultTextEl);
+
+    parentContainer.appendChild(previousResultContainerEl);
+
+}
+
+// Determine Clicked Object 
+var determineClicked = function(event) {
+    var itemClicked = event.target;
+    
+    if (itemClicked.id === "start-quiz") {
+        startQuiz();
+    } else if (itemClicked.id.includes("choice-")) {
+        // When question choice is clicked
+        var buttonClicked = document.getElementById(itemClicked.id);
+        var quetionNum = buttonClicked.getAttribute("data-question-number");
+        var choiceNum = buttonClicked.getAttribute("data-option-number");
+        // Call verifyAnswer function
+        verifyAnswer(quetionNum,choiceNum);
+    }
+}
+
+
+// Event Listeners
+mainContentEl.addEventListener("click", determineClicked);
 
 loadHomePage();
