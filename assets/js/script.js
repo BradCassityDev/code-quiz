@@ -91,6 +91,40 @@ var loadHomePage = function () {
     mainContentEl.appendChild(sectionContentEl);
 }
 
+// Record Score
+var recordScore = function (initials, score) {
+
+    // retrieve high scores
+    var highScores = JSON.parse(localStorage.getItem("highScores"));
+    var newScoreObj = {
+        initials: initials,
+        score: score
+    };
+    if (highScores) {
+        // Loop through and add new score to high scores if it is in the top 10
+        highScores.push(newScoreObj);
+    } else {
+        highScores = [newScoreObj];
+    }
+    
+    // Sort highScore items in decending order
+    highScores.sort(function(a,b) {
+        var scores1 = parseInt(a.score);
+        var scores2 = parseInt(b.score);
+        var match = 0;
+        if (scores1 < scores2) {
+            match = 1;
+        } else if (scores1 > scores2) {
+            match = -1;
+        }
+        return match;
+    });
+    
+    localStorage.setItem("highScores", JSON.stringify(highScores));
+
+}
+
+
 // End Quiz
 var endQuiz = function(result) {
 
@@ -124,16 +158,20 @@ var endQuiz = function(result) {
     formInputLabelEl.textContent = "Enter initials: ";
     formEl.appendChild(formInputLabelEl);
 
+    // Form Initial Input Field
     var formInputEl = document.createElement("input");
     formInputEl.type = "text";
-    formInputEl.name = "initial-input"
+    formInputEl.name = "initial-input";
+    formInputEl.id = "initial-input";
     formEl.appendChild(formInputEl);
 
+    // Form Button
     var formSubmitBtnEl = document.createElement("button");
     formSubmitBtnEl.type = "submit";
     formSubmitBtnEl.textContent = "Submit";
     formSubmitBtnEl.id = "submit-score-btn";
     formSubmitBtnEl.className = "primary-button";
+    formSubmitBtnEl.setAttribute("data-score", timeLeft)
     formEl.appendChild(formSubmitBtnEl);
 
     quizResultsContainerEl.appendChild(formEl);
@@ -265,7 +303,9 @@ var verifyAnswer = function(questionNum, choiceNum) {
 
 // Determine Clicked Object 
 var determineClicked = function(event) {
+    event.preventDefault();
     var itemClicked = event.target;
+    
     
     if (itemClicked.id === "start-quiz") {
         startQuiz();
@@ -276,6 +316,15 @@ var determineClicked = function(event) {
         var choiceNum = buttonClicked.getAttribute("data-option-number");
         // Call verifyAnswer function
         verifyAnswer(quetionNum,choiceNum);
+    } else if (itemClicked.id === "submit-score-btn") {
+        var initials = document.getElementById("initial-input").value;
+        var score = itemClicked.getAttribute("data-score");
+        // Ensure the user has entered their initials
+        if (!initials) {
+            alert("Please enter your initials before submitting.");
+            return false;
+        }
+        recordScore(initials,score);
     }
 }
 
