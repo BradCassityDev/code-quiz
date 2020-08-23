@@ -46,6 +46,7 @@ var loadHomePage = function () {
     var highScoreLinkEl = document.createElement("a");
     highScoreLinkEl.textContent = "View high scores";
     highScoreLinkEl.className = "high-score-link";
+    highScoreLinkEl.id = "high-score-link";
     headerEl.appendChild(highScoreLinkEl);
 
     // Time Remaining Section
@@ -91,6 +92,83 @@ var loadHomePage = function () {
     mainContentEl.appendChild(sectionContentEl);
 }
 
+// Clear High Scors
+var clearHighScores = function() {
+    var response = confirm("Confirm to clear all high scores.");
+    if(response){
+        localStorage.removeItem("highScores");
+    }
+}
+
+// Remove Section By Id 
+var removeSectionById = function(id) {
+    id = "#" + id;
+    var sectionToRemoveEl = mainContentEl.querySelector(id);
+    if(sectionToRemoveEl) {
+        sectionToRemoveEl.remove();
+    }
+}
+
+// Load High Scores and Display on Screen
+var loadHighScores = function() {
+    // Remove current section to make room for new high score section
+
+    var headerEl = mainContentEl.querySelector("header");
+    headerEl.remove();
+
+    // remove previous sections if they exist
+    removeSectionById("home-content-wrapper");
+    removeSectionById("quiz-results-container");
+    removeSectionById("question-content-wrapper");
+    
+      
+    // get section DOM object
+    var sectionContentEl = mainContentEl.querySelector("#section-content");
+    
+    // Add high score section to page
+    var highScoreWrapperEl = document.createElement("div");
+    highScoreWrapperEl.id = "high-score-wrapper";
+
+    // Heading
+    var highScoreHeadingEl = document.createElement("h2");
+    highScoreHeadingEl.textContent = "High Scores";
+    highScoreWrapperEl.appendChild(highScoreHeadingEl);
+
+    // Scores Wrapper
+    var scoresWrapperEl = document.createElement('div');
+    scoresWrapperEl.id = "scores-wrapper";
+
+    // Add highscores
+    var highScores = JSON.parse(localStorage.getItem("highScores"));
+    // Loop through highScores and create elements
+    for (var i = 0; i < highScores.length; i++) {
+        var scoreContainerEl = document.createElement("p");
+        scoreContainerEl.className = "score-container";
+        scoreContainerEl.textContent = (i + 1) + ". " + highScores[i].initials + " - " + highScores[i].score;
+        scoresWrapperEl.appendChild(scoreContainerEl);
+    }
+
+    // add Scores wrapper to high score container
+    highScoreWrapperEl.appendChild(scoresWrapperEl);
+
+    // Add back button - Takes you to home page
+    var backButtonEl = document.createElement("button");
+    backButtonEl.textContent = "Go back";
+    backButtonEl.id = "go-back-btn";
+    backButtonEl.className = "primary-button";
+    highScoreWrapperEl.appendChild(backButtonEl);
+
+    // add Clear high scores button
+    var clearHighScoreEl = document.createElement("button");
+    clearHighScoreEl.textContent = "Clear high scores";
+    clearHighScoreEl.id = "clear-scores-btn";
+    clearHighScoreEl.className = "primary-button";
+    highScoreWrapperEl.appendChild(clearHighScoreEl);
+
+    // add section to main section content
+    sectionContentEl.appendChild(highScoreWrapperEl);
+}
+
 // Record Score
 var recordScore = function (initials, score) {
 
@@ -120,7 +198,13 @@ var recordScore = function (initials, score) {
         return match;
     });
     
+    // Add adjusted highScore array to localStorage
     localStorage.setItem("highScores", JSON.stringify(highScores));
+
+    // Load High Scores 
+    loadHighScores();
+
+
 
 }
 
@@ -196,7 +280,7 @@ var loadNextQuestion = function() {
 
     // Loop through question answers and add to question content
     var choiceContainerEl = document.createElement("div");
-    choiceContainerEl.id = "choice-container";
+    choiceContainerEl.id = "options-container";
     for (var i = 0; i < questions[currentQuestionNum].choices.length; i++) {
         // comment create choice button 
         var choiceButtonEl = document.createElement("button");
@@ -230,6 +314,11 @@ var startTimer = function() {
         if (timeLeft < 0) {
             timeRemainingEl.textContent = "0";
             clearInterval(countDown);
+            timeLeft = 0;
+
+            // Remove quiz question section
+            removeSectionById("question-content-wrapper");
+
             endQuiz("Lost");
         } else {
             timeRemainingEl.textContent = timeLeft;
@@ -248,8 +337,7 @@ var startQuiz = function() {
     startTimer();
 
     // Remove Home Content
-    var homeContentEl = mainContentEl.querySelector("#home-content-wrapper");
-    homeContentEl.remove();
+    removeSectionById("home-content-wrapper");
 
     // Start on the first question
     loadNextQuestion();
@@ -308,6 +396,7 @@ var determineClicked = function(event) {
     
     
     if (itemClicked.id === "start-quiz") {
+        // Start Quiz button clicked from home page
         startQuiz();
     } else if (itemClicked.id.includes("choice-")) {
         // When question choice is clicked
@@ -317,6 +406,7 @@ var determineClicked = function(event) {
         // Call verifyAnswer function
         verifyAnswer(quetionNum,choiceNum);
     } else if (itemClicked.id === "submit-score-btn") {
+        // Submit score button clicked on results page
         var initials = document.getElementById("initial-input").value;
         var score = itemClicked.getAttribute("data-score");
         // Ensure the user has entered their initials
@@ -324,7 +414,25 @@ var determineClicked = function(event) {
             alert("Please enter your initials before submitting.");
             return false;
         }
+        // Record Score and Load High Scores
         recordScore(initials,score);
+    } else if (itemClicked.id === "clear-scores-btn") {
+        // Clear High Score Button Clicked
+
+    } else if (itemClicked.id === "go-back-btn") {
+        // Go Back Button Clicked on High Score Page
+        // Remove section content and go to start page
+        var sectionContentEl = mainContentEl.querySelector("#section-content");
+        sectionContentEl.remove();
+
+        //Load home page
+        loadHomePage();        
+
+    } else if (itemClicked.id === "high-score-link") {
+        // Clicked High Score Link in header
+
+        // Load High Scores Page
+        loadHighScores();
     }
 }
 
