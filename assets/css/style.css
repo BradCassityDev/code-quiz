@@ -13,8 +13,11 @@
 }
 h2 {
     font-weight: bold;
+    margin-bottom: 10px;
 }
-
+a:hover, button:hover {
+    cursor: pointer;
+}
 
 
 /* Header Content */
@@ -90,6 +93,27 @@ header {
     border-top: 1px solid var(--light-grey);
     margin-top: 25px;
     padding: 10px 10px;
+}
+.correct {
+    color: #73E38E;
+}
+.incorrect {
+    color: #E06666;
+}
+
+/* Results Page Styles */
+#quiz-results-container {
+    font-weight: bold;
+}
+#quiz-results-container p {
+    margin: 15px 0;
+}
+input {
+    padding: 5px 5px; 
+    margin-right: 10px;
+}
+label {
+    font-weight: bold;
 }
 
 /* Style High Scores Section */

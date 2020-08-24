@@ -28,6 +28,24 @@ var questions = [
             {option: 4, choice: "terminal/bash"}
         ],
         answer: 2
+    },
+    {   question: "String values must be enclosed within _______ when being assigned to variables.", 
+        choices: [
+            {option: 1, choice: "commas"},
+            {option: 2, choice: "curly brackets"},
+            {option: 3, choice: "quotes"},
+            {option: 4, choice: "parenthesis"}
+        ],
+        answer: 3
+    }, 
+    {   question: "The condition in an if / else statement is enclosed with __________.", 
+        choices: [
+            {option: 1, choice: "quotes"},
+            {option: 2, choice: "curly brackets"},
+            {option: 3, choice: "parenthesis"},
+            {option: 4, choice: "square brackets"}
+        ],
+        answer: 3
     }
 ];
 // quiz variables and default values
@@ -36,6 +54,7 @@ var currentQuestionNum = 0;
 var answeredCorrectly = 0;
 var score = 0;
 var countDown = '';
+var activeQuiz = false;
 
 // Load home page using the DOM
 var loadHomePage = function () {
@@ -180,7 +199,7 @@ var recordScore = function (initials, score) {
         score: score
     };
     if (highScores) {
-        // Loop through and add new score to high scores if it is in the top 10
+        // Loop through and add new score to high scores
         highScores.push(newScoreObj);
     } else {
         highScores = [newScoreObj];
@@ -209,7 +228,14 @@ var recordScore = function (initials, score) {
 
 // End Quiz
 var endQuiz = function(result) {
+    // Active Quiz is now false
+    activeQuiz = false;
 
+    // Set timeLeft back to 0 if it is less
+    if (timeLeft < 0) {
+        timeLeft = 0;
+    }
+    
     score = answeredCorrectly / questions.length; 
     if(result === "Lost") {
         alert("You ran out of time!");
@@ -334,6 +360,7 @@ var startQuiz = function() {
     answeredCorrectly = 0;
     currentQuestionNum = 0;
     score = 0;
+    activeQuiz = true;
     // Begin timer for quiz
     startTimer();
 
@@ -347,14 +374,16 @@ var startQuiz = function() {
 // Verify Question Answer and Adjust Score/Time
 var verifyAnswer = function(questionNum, choiceNum) {
     // Verify Response
-    var choiceResult = '';
+    var choiceResult, className = '';
     if (questions[questionNum].answer === parseInt(choiceNum)) {
         // Answered correctly
         answeredCorrectly++;
-        choiceResult = "Correct!";
+        choiceResult = "Previous question answered correctly!";
+        className = "correct";
     } else {
         // Got question wrong
-        choiceResult = "Wrong!";
+        choiceResult = "Previous question was answered incorrectly! -10sec";
+        className = "incorrect";
         // Deduct 10 seconds from total time remaining
         timeLeft = timeLeft - 10;
     }
@@ -382,7 +411,7 @@ var verifyAnswer = function(questionNum, choiceNum) {
     previousResultContainerEl.id = "previous-result-container";
     
     var previousResultTextEl = document.createElement("h3");
-    previousResultTextEl.className = "previous-result";
+    previousResultTextEl.className = "previous-result " + className;
     previousResultTextEl.textContent = choiceResult;
     previousResultContainerEl.appendChild(previousResultTextEl);
 
@@ -424,15 +453,24 @@ var determineClicked = function(event) {
     } else if (itemClicked.id === "go-back-btn") {
         // Go Back Button Clicked on High Score Page
         // Remove section content and go to start page
-        var sectionContentEl = mainContentEl.querySelector("#section-content");
-        sectionContentEl.remove();
+        removeSectionByQuery("#section-content");
 
         //Load home page
         loadHomePage();        
 
     } else if (itemClicked.id === "high-score-link") {
         // Clicked High Score Link in header
-        
+        // Check if quiz is going 
+        if (activeQuiz) {
+            // Confirm user wants to leave the quiz
+            var response = confirm("Are you sure you'd like to leave the quiz? This will stop your current attempt.");
+            if(response) {
+                // Stop countdown
+                clearInterval(countDown);
+            } else {
+                return false;
+            }
+        }
         // Load High Scores Page
         loadHighScores();
     }
