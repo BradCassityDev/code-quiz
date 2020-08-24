@@ -1,4 +1,4 @@
-## Random Password Generator
+## Code Quiz
 
 ## Overview:
 This project was built for the purposes of quizing programmers to test their knowledge in programming. Once the quiz starts, a timer is started that counts down from 60 giving the user 60 seconds to complete the timed quiz. Each question they get incorrect will result in a deduction of 10 seconds from their current time remaining. If time runs out, the quiz ends and you get a zero. Points are an exact representation of how much time the user had remaining at the end of the quiz.
