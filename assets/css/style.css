@@ -1,25 +1,25 @@
-/* Variables */
+/* Variables for root */
 :root {
     --main-button-color: #351C75;
     --secondary-button-hover-color: #D07BDD;
     --purple-accent-color: #DFD2EB;
     --light-grey: #B2B2B2;
 }
-
+/* Seting default values for all elements */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
+/* h2 element styles */
 h2 {
     font-weight: bold;
     margin-bottom: 10px;
 }
+/* Link and button hover styles */
 a:hover, button:hover {
     cursor: pointer;
 }
-
-
 /* Header Content */
 header {
     width: 100%;
@@ -30,51 +30,48 @@ header {
     align-content: center;
     padding: 10px 30px;
 }
-.time-remaining {
-    
-}
-.time-remaining-span {
-
+/* High Score Link in Header  */
+.high-score-link {
+    color: var(--secondary-button-hover-color);
 }
 /* Home Content */
+/* Section Content Wrapper */
 .section-content {
     padding: 50px;
     max-width: 500px;
     width: 100%;
     margin: 0 auto;
-    
 }
+/* Home Content Wrapper */
 #home-content-wrapper {
     text-align: center;
 }
+/* Home Description <p> styles */
 .home-description {
     margin: 15px 0;
 }
-
-#options-container {
-    text-align: left;
-}
+/* Quiz Question Styles */
+/* Question Text */
 .question-text {
     margin-bottom: 15px;
 }
+/* Quiz Question Options Container */
+#options-container {
+    text-align: left;
+}
+/* Quiz Question Options Button Styles */
 #options-container button {
     display: block;
     width: 100%;
     text-align: left;
     margin: 5px 0;
 }
+/* Adding some padding to home content */
 .home-content-wrapper h2, .home-content-wrapper p {
     padding-bottom: 15px;
 }
 
-.home-heading {
-    font-weight: bold;
-}
-
-.high-score-link {
-    color: var(--secondary-button-hover-color);
-}
-
+/* Primary button styling throughout site */
 .primary-button {
     padding: 8px 15px;
     background-color: var(--main-button-color);
@@ -82,11 +79,11 @@ header {
     border: none;
     border-radius: 5px;
 }
+/* Primary Button Hover Behavior */
 .primary-button:hover {
     background-color: var(--secondary-button-hover-color);
     border: none;
 }
-
 /* Quiz Section Styles*/
 .previous-result {
     color: var(--light-grey);
@@ -94,37 +91,42 @@ header {
     margin-top: 25px;
     padding: 10px 10px;
 }
+/* Correct reponse color */
 .correct {
     color: #73E38E;
 }
+/* Incorrect reponse color */
 .incorrect {
     color: #E06666;
 }
-
 /* Results Page Styles */
 #quiz-results-container {
     font-weight: bold;
 }
+/* Quiz Results Your Score Paragraph */
 #quiz-results-container p {
     margin: 15px 0;
 }
+/* Input field styles */
 input {
     padding: 5px 5px; 
     margin-right: 10px;
 }
+/* Label for Input field styles */
 label {
     font-weight: bold;
 }
-
 /* Style High Scores Section */
 #scores-wrapper {
     margin: 15px 0;
 }
+/* High Score List Container */
 .score-container {
     background-color: var(--purple-accent-color);
     margin-bottom: 5px;
     padding: 5px 5px;
 }
+/* Adding margin to unique button */
 #clear-scores-btn {
     margin-left: 10px;
 }

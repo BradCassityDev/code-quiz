@@ -1,3 +1,4 @@
+// Grabbed main content wrapper from html to reference
 var mainContentEl = document.querySelector("#main-content");
 
 // Questions array containing the quiz questions and answers
@@ -100,7 +101,6 @@ var loadHomePage = function () {
     startQuizBtnEl.className = "primary-button";
     startQuizBtnEl.id = "start-quiz";
     startQuizBtnEl.textContent = "Start Quiz";
-
     homeContentEl.appendChild(startQuizBtnEl);
 
     // append homeContentEl to sectionContentEl
@@ -139,7 +139,6 @@ var loadHighScores = function() {
     removeSectionByQuery("#question-content-wrapper");
     removeSectionByQuery("#high-score-wrapper");
     
-      
     // get section DOM object
     var sectionContentEl = mainContentEl.querySelector("#section-content");
     
@@ -167,7 +166,6 @@ var loadHighScores = function() {
             scoresWrapperEl.appendChild(scoreContainerEl);
         }
     }
-    
 
     // add Scores wrapper to high score container
     highScoreWrapperEl.appendChild(scoresWrapperEl);
@@ -224,7 +222,6 @@ var recordScore = function (initials, score) {
     // Load High Scores 
     loadHighScores();
 }
-
 
 // End Quiz
 var endQuiz = function(result) {
@@ -315,7 +312,7 @@ var loadNextQuestion = function() {
         choiceButtonEl.id = "choice-" + questions[currentQuestionNum].choices[i].option;
         choiceButtonEl.setAttribute("data-question-number", currentQuestionNum);
         choiceButtonEl.setAttribute("data-option-number", questions[currentQuestionNum].choices[i].option);
-        choiceButtonEl.textContent = questions[currentQuestionNum].choices[i].choice;
+        choiceButtonEl.textContent = questions[currentQuestionNum].choices[i].option + ". " + questions[currentQuestionNum].choices[i].choice;
         // add new button to choice container
         choiceContainerEl.appendChild(choiceButtonEl);
     }
@@ -328,17 +325,22 @@ var loadNextQuestion = function() {
 
     // Increment Current Question
     currentQuestionNum++;
-
 }
 
 // Begin Quiz Timer
 var startTimer = function() {
+    // Set time to 60 seconds
     timeLeft = 60;
+    // grab time-remaining span from page and set its textContent to timeLeft
     var timeRemainingEl = mainContentEl.querySelector("#time-remaining-span");
     timeRemainingEl.textContent = timeLeft;
     timeLeft--;
+
+    // Begin the countDown interval to run every second (1000ms)
     countDown = setInterval(function() {
+        // Check if time is still available 
         if (timeLeft < 0) {
+            // No time left - Clear interval and send to endQuiz function
             timeRemainingEl.textContent = "0";
             clearInterval(countDown);
             timeLeft = 0;
@@ -348,6 +350,7 @@ var startTimer = function() {
 
             endQuiz("Lost");
         } else {
+            // Time remaining - Adjust display time
             timeRemainingEl.textContent = timeLeft;
             timeLeft--;
         }
@@ -389,8 +392,7 @@ var verifyAnswer = function(questionNum, choiceNum) {
     }
     
     // Remove previous question 
-    var questionContentEl = mainContentEl.querySelector("#question-content-wrapper");
-    questionContentEl.remove();
+    removeSectionByQuery("#question-content-wrapper");
 
     // Verify there are more questions to render
     if (currentQuestionNum < questions.length) {
@@ -421,9 +423,11 @@ var verifyAnswer = function(questionNum, choiceNum) {
 
 // Determine Clicked Object 
 var determineClicked = function(event) {
+    // Prevent default form/button behavior
     event.preventDefault();
+
+    // Grab the item clicked to evaluate what had been interacted with
     var itemClicked = event.target;
-    
     
     if (itemClicked.id === "start-quiz") {
         // Start Quiz button clicked from home page
@@ -449,18 +453,15 @@ var determineClicked = function(event) {
     } else if (itemClicked.id === "clear-scores-btn") {
         // Clear High Score Button Clicked
         clearHighScores();
-
     } else if (itemClicked.id === "go-back-btn") {
         // Go Back Button Clicked on High Score Page
         // Remove section content and go to start page
         removeSectionByQuery("#section-content");
-
         //Load home page
         loadHomePage();        
-
     } else if (itemClicked.id === "high-score-link") {
         // Clicked High Score Link in header
-        // Check if quiz is going 
+        // Check if quiz is actively going 
         if (activeQuiz) {
             // Confirm user wants to leave the quiz
             var response = confirm("Are you sure you'd like to leave the quiz? This will stop your current attempt.");
@@ -476,8 +477,8 @@ var determineClicked = function(event) {
     }
 }
 
-
 // Event Listeners
 mainContentEl.addEventListener("click", determineClicked);
 
+// Load the home page
 loadHomePage();
