@@ -14,7 +14,7 @@ Users can test their knowledge on current programming standards by taking a time
 ## Other Infomration:
 GitHub Repository: https://github.com/BradCassityDev/code-quiz
 
-GitHub Published Site: https://bradcassitydev.github.io/code-quiz/
+GitHub Published Site: https://bradcassitydev.github.io/code-quiz/index.html
 
 ## Home Page:
 ![Working Project Screenshot](/home-page.PNG)
